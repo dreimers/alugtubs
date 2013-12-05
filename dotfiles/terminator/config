@@ -1,0 +1,19 @@
+[global_config]
+  suppress_multiple_term_dialog = True
+  borderless = True
+[keybindings]
+[profiles]
+  [[default]]
+    background_image = None
+    background_color = "#232323"
+    scrollbar_position = hidden
+    foreground_color = "#c2c2c2"
+[layouts]
+  [[default]]
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+    [[[window0]]]
+      type = Window
+      parent = ""
+[plugins]
