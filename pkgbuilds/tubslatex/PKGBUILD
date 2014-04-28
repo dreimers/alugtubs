@@ -1,0 +1,45 @@
+# Maintainer: Karsten Hinz <k.hinz@tu-bs.de>
+pkgname=texlive-tubs
+_pkgname=tubslatex
+pkgver=1.0.2
+pkgrel=1
+pkgdesc="LaTeX-Vorlagen zum Corporate Design der TU Braunschweig.
+ Klassen und Pakete zur Erstellung von Präsentationen, Plakaten, Briefen
+ und Dokumenten im Corporate Design der TU Braunschweig"
+arch=('any')
+url="http://www.enricojoerns.de/tubslatex/"
+license=('unknown')
+depends=('texlive-bin' 'texlive-core' 'texlive-latexextra' 'texlive-fontsextra' 'unzip' 'wget')
+# 'texlive-langextra')
+options=(!strip !zipman)
+#changelog=http://www.enricojoerns.de/tubslatex/$pkgver/Changelog.txt
+#http://enricojoerns.de/tubslatex/tubslatex_latest_stable.tds.zip
+install=tubslatex.install
+source=(http://www.enricojoerns.de/tubslatex/$pkgver/${_pkgname}_$pkgver.tds.zip)
+md5sums=('fe49f1cd97aac09e3db51335b119453f')
+
+package() {
+	cd "$srcdir"
+
+    logfile=$(mktemp -p /tmp texlive-tubs.XXXXXXXX)
+
+	#install design globaly
+	install -d ${pkgdir}/usr/local/share/texmf/
+	cp -r doc fonts tex ${pkgdir}/usr/local/share/texmf/
+
+	#install copyright and changelog
+	install -d $pkgdir/usr/local/share/$pkgname
+	wget -O changelog http://www.enricojoerns.de/tubslatex/$pkgver/Changelog.txt
+	gzip -f changelog
+	install -m644 ../copyright ${pkgdir}/usr/local/share/$pkgname
+
+	#install doc
+	install -d ${pkgdir}/usr/local/share/doc/
+	ln -sf /usr/local/share/texmf/doc/latex/tubs $pkgdir/usr/local/share/doc/$pkgname
+
+	#install examples
+	install -d $pkgdir/usr/local/share/$pkgname/examples
+	wget http://www.enricojoerns.de/tubslatex/$pkgver/tubslatex_examples.zip
+	unzip tubslatex_examples.zip -d $pkgdir/usr/local/share/$pkgname/examples
+}
+

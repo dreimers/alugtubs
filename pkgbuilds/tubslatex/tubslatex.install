@@ -1,0 +1,142 @@
+
+getnonfreefonts() {
+
+	# Check for getnonfreefonts and install if needed
+	# Is either located at /usr/bin/getnonfreefonts (as symlink)
+	# or at /usr/local/bin/getnonfreefonts
+	if ([ ! -x /usr/bin/getnonfreefonts ] && [ ! -x /usr/local/bin/getnonfreefonts ]); then
+		#      db_input high texlive-tubs/installgetnonfreefonts || true
+		#      db_go
+		#
+		#      db_get texlive-tubs/installgetnonfreefonts
+		#if [ "$RET" = "true" ]; then
+		if [ "true" = "true" ]; then
+			echo -n "Downloading and installing getnonfreefonts..."
+			texluatmp=$(mktemp -p /tmp install-getnonfreefonts.XXXXXXXX)
+			if wget http://tug.org/fonts/getnonfreefonts/install-getnonfreefonts -O $texluatmp >> $logfile 2>&1; then
+				texlua $texluatmp >> $logfile 2>&1
+				rm -f $texluatmp
+				echo "done."
+			else
+				echo "failed. Output has been stored in"
+				echo "$logfile"
+				echo "Please include this file if you report a bug."
+				echo "-- You may need to install Arial later manually --"
+			fi
+		else
+			echo "Warning: Arial will not be installed!"
+			echo "-- You may need to install Arial later manually --"
+		fi
+	fi
+
+	echo -n "Running getnonfreefonts to install arial-urw..."
+	if getnonfreefonts --sys --verbose arial-urw >> $logfile 2>&1; then
+		echo "done."
+	else
+		echo "failed. Output has been stored in"
+		echo "$logfile"
+		echo "Please include this file if you report a bug."
+		echo "-- You may need to install Arial later manually --"
+	fi
+
+}
+
+updateFiles() {
+
+	echo -n "Running mktexlsr..."
+	if mktexlsr >> $logfile 2>&1; then
+		echo "done."
+	else 
+		echo "failed. Output has been stored in"
+		echo "$logfile"
+		echo "Please include this file if you report a bug."
+	fi
+}
+
+update_font_db() {
+	# Run updmap to update font db
+	echo -n "Running updmap-sys..."
+	if updmap-sys >> $logfile 2>&1; then
+		echo "done."
+	else
+		echo "failed. Output has been stored in"
+		echo "$logfile"
+		echo "Please include this file if you report a bug."
+	fi
+}
+
+registerFonts() {
+
+	# Check for already available Mapfiles
+	# (Some updmap versions fail trying to enable an active map)
+	npsans=`updmap-sys --listmaps 2>&1 | grep NexusProSerif | grep -v ! | grep -v disabled || true`
+	npserif=`updmap-sys --listmaps 2>&1 | grep NexusProSerif | grep -v ! | grep -v disabled || true`
+
+	# Enable Nexus maps
+	if [ -z "$npsans" ]; then
+		echo -n "Adding map file for NexusProSans..."
+		if updmap-sys --nomkmap --nohash --enable Map=NexusProSans.map >> $logfile 2>&1; then
+			echo "done."
+		else
+			echo "failed."
+			echo "Output has been stored in"
+			echo "$logfile"
+			echo "Please include this file if you report a bug."
+		fi
+	else
+		echo "NexusProSans already enabled, skipping."
+	fi
+	if [ -z "$npserif" ]; then
+		echo -n "Adding map file for NexusProSerif..."
+		if updmap-sys --nomkmap --nohash --enable Map=NexusProSerif.map >> $logfile 2>&1; then
+			echo "done."
+		else
+			echo "failed."
+			echo "Output has been stored in"
+			echo "$logfile"
+			echo "Please include this file if you report a bug."
+		fi
+	else
+		echo "NexusProSerif already enabled, skipping."
+	fi
+
+	update_font_db
+}
+
+unregister_fonts() {
+
+	echo -n "Removing map file for NexusProSans..."
+	if updmap-sys --nomkmap --nohash --disable NexusProSans.map > $logfile 2>&1; then
+		echo "done."
+	else
+		echo "failed."
+	fi
+	echo -n "Removing map file for NexusProSerif..."
+	if updmap-sys --nomkmap --nohash --disable NexusProSerif.map > $logfile 2>&1; then
+		echo "done."
+	else
+		echo "failed."
+	fi
+
+	update_font_db
+}
+
+post_install() {
+
+	logfile=$(mktemp -p /tmp texlive-tubs.XXXXXXXX)
+	updateFiles
+	getnonfreefonts
+	registerFonts
+
+	echo "Output has been stored in $logfile"
+}
+
+post_remove() {
+
+	logfile=$(mktemp -p /tmp texlive-tubs.XXXXXXXX)
+	updateFiles
+
+	unregister_fonts
+
+	echo "Output has been stored in $logfile"
+}
