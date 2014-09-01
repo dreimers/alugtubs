@@ -31,7 +31,7 @@ package() {
 	install -d $pkgdir/usr/local/share/$pkgname
 	wget -O changelog http://www.enricojoerns.de/tubslatex/$pkgver/Changelog.txt
 	gzip -f changelog
-	install -m644 ../copyright ${pkgdir}/usr/local/share/$pkgname
+#	install -m644 copyright ${pkgdir}/usr/local/share/$pkgname
 
 	#install doc
 	install -d ${pkgdir}/usr/local/share/doc/
