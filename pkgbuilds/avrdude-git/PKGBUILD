@@ -1,0 +1,40 @@
+# Maintainer: Dennis Reimers <d.reimers@tu-bs.de>
+
+pkgname=avrdude-git
+pkgver=0
+pkgrel=1
+pkgdesc="Download/upload/manipulate the ROM and EEPROM contents of AVR microcontrollers"
+arch=('i686' 'x86_64')
+url="https://github.com/dreimers/avrdude"
+license=('GPL')
+makedepends=('git')
+depends=('libusb-compat' 'readline')
+provides=('avrdude')
+conflicts=('avrdude')
+
+_gitroot="git://github.com/dreimers/avrdude"
+_gitname="avrdude"
+_gitbranch="ft245_serial"
+
+source=("$_gitroot#branch=$_gitbranch")
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir/$_gitname" 
+
+  rm -rf "$srcdir/$_gitname-build"
+  cp -r "$srcdir/$_gitname" "$srcdir/$_gitname-build"
+  cd "$srcdir/$_gitname-build"
+
+  ./bootstrap
+  ./configure --mandir=/usr/share/man --prefix=/usr --sysconfdir=/etc
+  make
+}
+
+package() {
+  cd "$srcdir/$_gitname-build"
+
+  make DESTDIR="$pkgdir/" install
+}
+
+# vim:set ts=2 sw=2 et:
