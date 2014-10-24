@@ -1,7 +1,7 @@
 # Maintainer: Karsten Hinz <k.hinz@tu-bs.de>
 pkgname=texlive-tubs
 _pkgname=tubslatex
-pkgver=1.0.2
+pkgver=1.0.3
 pkgrel=1
 pkgdesc="LaTeX-Vorlagen zum Corporate Design der TU Braunschweig.
  Klassen und Pakete zur Erstellung von Präsentationen, Plakaten, Briefen
@@ -15,8 +15,8 @@ options=(!strip !zipman)
 #changelog=http://www.enricojoerns.de/tubslatex/$pkgver/Changelog.txt
 #http://enricojoerns.de/tubslatex/tubslatex_latest_stable.tds.zip
 install=tubslatex.install
-source=(http://www.enricojoerns.de/tubslatex/$pkgver/${_pkgname}_$pkgver.tds.zip)
-md5sums=('fe49f1cd97aac09e3db51335b119453f')
+source=(http://tubslatex.ejoerns.de/$pkgver/${_pkgname}_$pkgver.tds.zip)
+md5sums=('aad2f9ce0e070a0a49a3bcb7c4578ea9')
 
 package() {
 	cd "$srcdir"
@@ -29,7 +29,7 @@ package() {
 
 	#install copyright and changelog
 	install -d $pkgdir/usr/local/share/$pkgname
-	wget -O changelog http://www.enricojoerns.de/tubslatex/$pkgver/Changelog.txt
+	wget -O changelog http://tubslatex.ejoerns.de/$pkgverg/Changelog.txt
 	gzip -f changelog
 #	install -m644 copyright ${pkgdir}/usr/local/share/$pkgname
 
@@ -39,7 +39,7 @@ package() {
 
 	#install examples
 	install -d $pkgdir/usr/local/share/$pkgname/examples
-	wget http://www.enricojoerns.de/tubslatex/$pkgver/tubslatex_examples.zip
+	wget http://tubslatex.ejoerns.de/$pkgver/tubslatex_examples.zip
 	unzip tubslatex_examples.zip -d $pkgdir/usr/local/share/$pkgname/examples
 }
 
