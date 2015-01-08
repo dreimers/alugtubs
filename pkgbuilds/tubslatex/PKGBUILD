@@ -16,7 +16,7 @@ options=(!strip !zipman)
 #http://enricojoerns.de/tubslatex/tubslatex_latest_stable.tds.zip
 install=tubslatex.install
 source=(http://tubslatex.ejoerns.de/$pkgver/${_pkgname}_$pkgver.tds.zip)
-md5sums=('aad2f9ce0e070a0a49a3bcb7c4578ea9')
+md5sums=('2d00c38cf1af2b4a8f1145b620dd54e2')
 
 package() {
 	cd "$srcdir"
