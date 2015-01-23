@@ -1,0 +1,35 @@
+# Maintainer: Dennis Reimers <d.reimers@tu-braunschweig.de> 
+
+pkgname=sigrok-udev-rules-git
+_pkgname=libsigrok
+pkgver=3034.7a54232
+pkgrel=1
+pkgdesc="UDEV rules to support various hardware for sigrok (git version)"
+arch=('i686' 'x86_64')
+url="http://www.sigrok.org/wiki/Libsigrok"
+license=('GPL3')
+source=("libsigrok::git://sigrok.org/libsigrok")
+makedepends=('git')
+
+pkgver() {
+  cd "$srcdir/$_pkgname"
+
+  echo $(git rev-list --count master).$(git rev-parse --short master)
+}
+
+prepare() {
+  cd "$srcdir/$_pkgname/contrib"
+
+  sed -i 's/plugdev/uucp/' z60_libsigrok.rules
+}
+
+package() {
+  cd "$srcdir/$_pkgname"
+  mkdir -p $pkgdir/usr/lib/udev/rules.d/
+  cp contrib/z60_libsigrok.rules $pkgdir/usr/lib/udev/rules.d/99-libsigrok.rules
+  chmod a+r $pkgdir/usr/lib/udev/rules.d/99-libsigrok.rules
+  echo "Reload udev to add the new rules."
+}
+
+md5sums=('SKIP')
+# vim:set ts=2 sw=2 et:
